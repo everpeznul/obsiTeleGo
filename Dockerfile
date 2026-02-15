@@ -16,6 +16,5 @@ RUN apk --no-cache add ca-certificates tzdata
 WORKDIR /root/
 
 COPY --from=builder /bot .
-COPY --from=builder /worker .
 
 CMD ["./bot"]
