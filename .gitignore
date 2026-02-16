@@ -21,6 +21,7 @@ coverage.txt
 
 # Dependency directories
 vendor/
+data/mydb.sqlite
 
 # Go workspace file
 go.work

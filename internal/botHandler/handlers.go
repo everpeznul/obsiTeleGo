@@ -13,6 +13,10 @@ func (botHandler *BotHandler) InitThreadHandler(ctx context.Context, b *bot.Bot,
 	text := strings.Join(parts[1:], " ")
 	botHandler.Log.Info("Init New Thread", "thread id", update.Message.MessageThreadID, "thread name", text)
 
-	/*	 botHandler.Repo.NewThread(update.Message.ThreadID, update.Message.Text)
-	 */
+	err := botHandler.Repo.NewThread(ctx, int64(update.Message.MessageThreadID), text)
+	if err != nil {
+
+		botHandler.Log.Error("Init Thread Error", "error", err)
+		return
+	}
 }

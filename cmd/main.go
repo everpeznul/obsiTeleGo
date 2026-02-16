@@ -12,26 +12,27 @@ import (
 
 func main() {
 
-	app := app.New()
+	a := app.New()
+	defer a.DBClose()
 
-	app.Log.Info("Starting obsiTeleGo")
+	a.Log.Info("Starting obsiTeleGo")
 
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
 
 	opts := []bot.Option{
-		bot.WithDefaultHandler(app.BotHandler.Handle),
+		bot.WithDefaultHandler(a.BotHandler.Handle),
 	}
 
 	b, err := bot.New(os.Getenv("TELEGRAM_BOT_TOKEN"), opts...)
 	if nil != err {
 
-		app.Log.Error("Error starting bot", "error", err)
+		a.Log.Error("Error starting bot", "error", err)
 		panic(err)
 	}
 
 	b.RegisterHandler(bot.HandlerTypeMessageText, "/initThread", bot.MatchTypePrefix, func(ctx context.Context, b *bot.Bot, update *models.Update) {
-		app.BotHandler.InitThreadHandler(ctx, b, update)
+		a.BotHandler.InitThreadHandler(ctx, b, update)
 	})
 
 	b.Start(ctx)
