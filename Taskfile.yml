@@ -1,0 +1,26 @@
+version: '3'
+
+tasks:
+  redis:
+    env:
+      REPO: redis
+      COMPOSE_PROFILES: redis
+    cmds:
+      - docker compose down -v
+      - docker compose up --build --force-recreate -d
+
+  sqlite:
+    env:
+      REPO: sqlite
+      COMPOSE_PROFILES: ""
+    cmds:
+      - docker compose down -v
+      - docker compose up --build --force-recreate -d
+
+  down:
+    cmds:
+      - docker compose down -v
+
+  clean:
+    cmds:
+      - docker compose down -v --rmi all --remove-orphans
