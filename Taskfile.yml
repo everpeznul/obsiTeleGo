@@ -1,5 +1,4 @@
 version: '3'
-
 tasks:
   redis:
     env:
@@ -8,7 +7,6 @@ tasks:
     cmds:
       - docker compose down -v
       - docker compose up --build --force-recreate -d
-
   sqlite:
     env:
       REPO: sqlite
@@ -16,11 +14,48 @@ tasks:
     cmds:
       - docker compose down -v
       - docker compose up --build --force-recreate -d
-
   down:
     cmds:
       - docker compose down -v
-
   clean:
     cmds:
       - docker compose down -v --rmi all --remove-orphans
+  lint:
+    deps:
+      - lint-go
+      - lint-yml
+      - lint-docker
+      - lint-md
+  lint-go:
+    cmds:
+      - go vet -tags "sqlite" ./...
+      - go vet -tags "redis" ./...
+      - golangci-lint run --build-tags "sqlite" ./...
+      - golangci-lint run --build-tags "redis" ./...
+  lint-yml:
+    cmds:
+      - |
+        yamllint -d "{extends: relaxed, rules: {line-length: disable}}" .
+  lint-docker:
+    cmds:
+      - docker run --rm -i hadolint/hadolint hadolint --ignore DL3018 - < Dockerfile
+  lint-md:
+    cmds:
+      - docker run --rm -v {{.USER_WORKING_DIR}}:/workdir davidanson/markdownlint-cli2:latest "**/*.md"
+  fmt:
+    deps:
+      - fmt-go
+      - fmt-md
+      - fmt-yml
+  fmt-go:
+    cmds:
+      - go mod tidy
+      - go fmt ./...
+      - golangci-lint run --fix --build-tags "sqlite" ./...
+      - golangci-lint run --fix --build-tags "redis" ./...
+  fmt-md:
+    cmds:
+      - docker run --rm -v {{.USER_WORKING_DIR}}:/workdir davidanson/markdownlint-cli2:latest "**/*.md" "--fix"
+  fmt-yml:
+    cmds:
+      - yamlfmt .

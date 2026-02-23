@@ -16,7 +16,6 @@ services:
       retries: 5
     networks:
       - obsidian_net
-
   redis:
     image: redis:8.6.0-alpine
     container_name: obsidian_redis
@@ -32,7 +31,6 @@ services:
       retries: 5
     networks:
       - obsidian_net
-
   bot:
     build:
       context: .
@@ -56,12 +54,10 @@ services:
     restart: unless-stopped
     networks:
       - obsidian_net
-
 volumes:
   rabbitmq_data:
   sqlite_data:
   redis_data:
-
 networks:
   obsidian_net:
     driver: bridge

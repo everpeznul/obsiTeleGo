@@ -10,7 +10,7 @@ COPY . .
 ARG REPO
 RUN CGO_ENABLED=0 GOOS=linux go build -tags ${REPO} -o /bot ./cmd/main.go
 
-FROM alpine:latest
+FROM alpine:3.19
 
 RUN apk --no-cache add ca-certificates tzdata
 
