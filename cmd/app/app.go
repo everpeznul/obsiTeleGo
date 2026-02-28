@@ -4,6 +4,7 @@ import (
 	"log/slog"
 	"obsiTeleGo/internal/botHandler"
 	"obsiTeleGo/internal/logger"
+	"obsiTeleGo/internal/rabbitmq"
 	"obsiTeleGo/internal/repository"
 	"os"
 )
@@ -17,6 +18,7 @@ type App struct {
 	Log        *slog.Logger
 	db         database
 	Repo       repository.Repo
+	Rabbit     *rabbitmq.Rabbit
 	BotHandler *botHandler.BotHandler
 }
 
@@ -38,7 +40,13 @@ func New(opt *Options) App {
 		panic(err)
 	}
 
-	botHandler := initBotHandler(logger.BotHandler, repo)
+	rabbit, err := initRabbitMQ(logger.Rabbit)
+	if err != nil {
+		log.Error("Init Rabbit Error", "error", err)
+		panic(err)
+	}
+
+	botHandler := initBotHandler(logger.BotHandler, repo, rabbit)
 
 	return App{
 		Logger:     logger,
@@ -46,6 +54,7 @@ func New(opt *Options) App {
 		db:         db,
 		Repo:       repo,
 		BotHandler: botHandler,
+		Rabbit:     rabbit,
 	}
 }
 
@@ -64,6 +73,26 @@ func (a *App) DBClose() error {
 	return nil
 }
 
-func initBotHandler(log *slog.Logger, repo repository.Repo) *botHandler.BotHandler {
-	return botHandler.New(log, repo)
+func initBotHandler(log *slog.Logger, repo repository.Repo, rabbit *rabbitmq.Rabbit) *botHandler.BotHandler {
+	return botHandler.New(log, repo, rabbit)
+}
+
+func initRabbitMQ(log *slog.Logger) (*rabbitmq.Rabbit, error) {
+
+	rabbit := rabbitmq.New(log)
+
+	err := rabbit.Ch.ExchangeDeclare(
+		"tg_router",
+		"topic",
+		true,
+		false,
+		false,
+		false,
+		nil,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+	return rabbit, nil
 }

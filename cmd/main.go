@@ -15,11 +15,10 @@ func main() {
 	a := app.New(&app.Options{
 		Repo: os.Getenv("REPO"),
 	})
-	defer func() {
-		if err := a.DBClose(); err != nil {
-			a.Log.Error("Close DB Error", "error", err)
-		}
-	}()
+	defer a.DBClose()
+	defer a.Rabbit.Conn.Close()
+	defer a.Rabbit.Ch.Close()
+
 	a.Log.Info("Starting obsiTeleGo")
 
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
