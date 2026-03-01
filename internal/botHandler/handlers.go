@@ -2,6 +2,8 @@ package botHandler
 
 import (
 	"context"
+	"obsiTeleGo/config"
+	"os"
 	"strings"
 
 	"github.com/go-telegram/bot"
@@ -26,6 +28,13 @@ func (botHandler *BotHandler) InitThreadHandler(ctx context.Context, b *bot.Bot,
 	if err != nil {
 
 		botHandler.Log.Error("Init Queue Error", "error", err)
+		return
+	}
+
+	configPath := os.Getenv("CONFIG_PATH")
+	err = config.AddTopic(configPath, threadName)
+	if err != nil {
+		botHandler.Log.Error("Update Config Error", "error", err)
 		return
 	}
 	botHandler.Log.Info("Init Queue Thread")

@@ -31,6 +31,8 @@ go.work
 *.env
 !.env.example
 
+config.json
+
 # macOS
 .DS_Store
 .AppleDouble

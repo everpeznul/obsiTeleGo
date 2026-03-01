@@ -38,6 +38,8 @@ services:
       args:
         REPO: ${REPO}
     container_name: obsidian_bot
+    ports:
+      - "8080:8080"
     command: ./bot
     env_file:
       - ./config/.env
@@ -45,6 +47,7 @@ services:
       "REPO": ${REPO}
     volumes:
       - sqlite_data:/data
+      - ./config:/root/config
     depends_on:
       rabbitmq:
         condition: service_healthy
