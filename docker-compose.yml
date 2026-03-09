@@ -46,7 +46,7 @@ services:
     environment:
       "REPO": ${REPO}
     volumes:
-      - sqlite_data:/data
+      - ./data:/data
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -63,7 +63,6 @@ services:
       - obsidian_net
 volumes:
   rabbitmq_data:
-  sqlite_data:
   redis_data:
 networks:
   obsidian_net:

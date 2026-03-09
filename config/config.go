@@ -17,6 +17,12 @@ func InitConfig(path string) error {
 	configMu.Lock()
 	defer configMu.Unlock()
 
+	if _, err := os.Stat(path); err == nil {
+		return nil
+	} else if !os.IsNotExist(err) {
+		return err
+	}
+
 	cfg := ObsidianConfig{
 		Exchange: "tg_router",
 		Topics:   []string{},

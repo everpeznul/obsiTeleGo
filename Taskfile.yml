@@ -31,11 +31,15 @@ tasks:
       - GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -tags {{.REPO}} -o ./bot ./cmd/main.go
       - >-
         rsync -avz --delete 
-        --include='config/'
-        --include='config/**'
-        --include='bot'
-        --filter=':- .gitignore'
-        --exclude='.git'
+        --include='/bot'
+        --include='/Dockerfile'
+        --include='/docker-compose.yml'
+        --include='/Taskfile.yml'
+        --include='/config/'
+        --include='/config/.env'
+        --include='/data/'
+        --filter='P /data/'
+        --exclude='*'
         -e ssh ./ {{.USER}}@{{.HOST}}:{{.DEST}}
   log_level:
     requires:

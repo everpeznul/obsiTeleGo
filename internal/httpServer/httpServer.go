@@ -34,7 +34,7 @@ func (s *HttpServer) setupRoutes() {
 
 	configPath := os.Getenv("CONFIG_PATH")
 
-	s.Router.GET("/config/config.json", func(c *gin.Context) {
+	s.Router.GET("/config.json", func(c *gin.Context) {
 		s.Log.Info("Send Config Request", "ip", c.ClientIP())
 		c.File(configPath)
 	})

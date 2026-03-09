@@ -1,5 +1,5 @@
 .gptree_config
-gptree_output.txt
+gptree*
 
 # Binaries
 *.exe
