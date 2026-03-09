@@ -5,6 +5,7 @@ import (
 )
 
 type Logger struct {
+	HttpServer *slog.Logger
 	BotHandler *slog.Logger
 	Domain     *slog.Logger
 	Obsidian   *slog.Logger
@@ -14,6 +15,7 @@ type Logger struct {
 
 func New(base *slog.Logger) *Logger {
 	return &Logger{
+		HttpServer: base.With("logger", "httpServer"),
 		BotHandler: base.With("logger", "botHandler"),
 		Domain:     base.With("logger", "domain"),
 		Obsidian:   base.With("logger", "obsidian"),

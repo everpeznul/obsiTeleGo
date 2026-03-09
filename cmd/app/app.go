@@ -2,7 +2,9 @@ package app
 
 import (
 	"log/slog"
+	"obsiTeleGo/config"
 	"obsiTeleGo/internal/botHandler"
+	"obsiTeleGo/internal/httpServer"
 	"obsiTeleGo/internal/logger"
 	"obsiTeleGo/internal/rabbitmq"
 	"obsiTeleGo/internal/repository"
@@ -22,6 +24,7 @@ type App struct {
 	Repo       repository.Repo
 	Rabbit     *rabbitmq.Rabbit
 	BotHandler *botHandler.BotHandler
+	HttpServer *httpServer.HttpServer
 }
 
 type Options struct {
@@ -35,6 +38,14 @@ func New(opt *Options) App {
 
 	logger := initLogger(base)
 	log := initAppLog(base)
+	log.Info("Init Loggers Successfully")
+
+	configPath := os.Getenv("CONFIG_PATH")
+	if err := config.InitConfig(configPath); err != nil {
+		log.Error("Init Config Error", "error", err)
+		panic(err)
+	}
+	log.Info("Init Config Successfully")
 
 	repo, db, err := initRepo(logger.Repo)
 
@@ -43,14 +54,19 @@ func New(opt *Options) App {
 		log.Error("Init Repo Error", "error", err)
 		panic(err)
 	}
+	log.Info("Init Repo Successfully")
 
 	rabbit, err := initRabbitMQ(logger.Rabbit)
 	if err != nil {
 		log.Error("Init Rabbit Error", "error", err)
 		panic(err)
 	}
+	log.Info("Init RabbitMQ Successfully")
 
 	botHandler := initBotHandler(logger.BotHandler, repo, rabbit)
+	log.Info("Init BotHandler Successfully")
+
+	httpServer := initHttpServer(logger.HttpServer)
 
 	return App{
 		Logger:     logger,
@@ -59,6 +75,7 @@ func New(opt *Options) App {
 		Repo:       repo,
 		BotHandler: botHandler,
 		Rabbit:     rabbit,
+		HttpServer: httpServer,
 	}
 }
 
@@ -99,4 +116,9 @@ func initRabbitMQ(log *slog.Logger) (*rabbitmq.Rabbit, error) {
 		return nil, err
 	}
 	return rabbit, nil
+}
+
+func initHttpServer(log *slog.Logger) *httpServer.HttpServer {
+
+	return httpServer.New(log, LogLevel)
 }

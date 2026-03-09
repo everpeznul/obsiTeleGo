@@ -53,6 +53,11 @@ services:
       redis:
         condition: service_healthy
         required: false
+    healthcheck:
+      test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --spider http://127.0.0.1:8080/ping || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
     restart: unless-stopped
     networks:
       - obsidian_net
