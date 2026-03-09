@@ -37,3 +37,8 @@ tasks:
         --filter=':- .gitignore'
         --exclude='.git'
         -e ssh ./ {{.USER}}@{{.HOST}}:{{.DEST}}
+  log_level:
+    requires:
+      vars: [ LEVEL ]
+    cmds:
+      - curl -X PUT http://localhost:8080/admin/loglevel?level={{.LEVEL}}

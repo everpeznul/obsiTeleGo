@@ -13,6 +13,8 @@ type database interface {
 	Close() error
 }
 
+var LogLevel = new(slog.LevelVar)
+
 type App struct {
 	Logger     *logger.Logger
 	Log        *slog.Logger
@@ -27,7 +29,9 @@ type Options struct {
 }
 
 func New(opt *Options) App {
-	base := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
+	LogLevel.Set(slog.LevelDebug)
+
+	base := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: LogLevel}))
 
 	logger := initLogger(base)
 	log := initAppLog(base)

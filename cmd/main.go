@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log/slog"
 	"obsiTeleGo/cmd/app"
 	"obsiTeleGo/config"
 	"os"
@@ -67,5 +68,24 @@ func main() {
 		c.File(configPath)
 	})
 
+	r.PUT("/admin/loglevel", func(c *gin.Context) {
+		levelStr := c.Query("level")
+
+		switch levelStr {
+		case "debug":
+			app.LogLevel.Set(slog.LevelDebug)
+		case "info":
+			app.LogLevel.Set(slog.LevelInfo)
+		case "warn":
+			app.LogLevel.Set(slog.LevelWarn)
+		case "error":
+			app.LogLevel.Set(slog.LevelError)
+		default:
+			c.String(400, "unknown level")
+			return
+		}
+
+		c.String(200, "Log level changed to %s", levelStr)
+	})
 	r.Run(":8080")
 }
